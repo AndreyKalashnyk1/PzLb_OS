@@ -798,16 +798,16 @@ void task25()
 
 // Головна функція
 
-int main()
-{
-    SetConsoleCP(1251);
-    SetConsoleOutputCP(1251);
-
-    //task21();
-    //task22();
-    //task23();
-    //task24();
-    task25();
-
-    return 0;
-}
+//int main()
+//{
+//    SetConsoleCP(1251);
+//    SetConsoleOutputCP(1251);
+//
+//    //task21();
+//    //task22();
+//    //task23();
+//    //task24();
+//    task25();
+//
+//    return 0;
+//}
