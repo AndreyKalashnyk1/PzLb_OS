@@ -44,7 +44,6 @@ Schoolboy inputSchoolboy(int index)
 
     cout << "  Запис " << index
         << " (ПІБ, клас, телефон, мат, фіз, укр, літ): ";
-    cin.ignore();
     cin.getline(buf, 200);
 
     // розбиваємо рядок по комах
@@ -97,7 +96,7 @@ void task1_createFile(const char* filename)
 
     cout << "  Формат вводу: ПІБ, клас, телефон, мат, фіз, укр, літ\n";
     cout << "  Приклад: Іваненко Олег Сергійович, 9, 0501112233, 10, 8, 7, 9\n\n";
-
+    cin.ignore();
     for (int i = 0; i < n; i++)
     {
         Schoolboy s = inputSchoolboy(i + 1);
@@ -166,6 +165,7 @@ void task1_addToEnd(const char* filename)
     if (!f) { perror("Помилка відкриття файлу"); return; }
 
     cout << "  Формат: ПІБ, клас, телефон, мат, фіз, укр, літ\n\n";
+    cin.ignore();
     for (int i = 0; i < k; i++)
     {
         Schoolboy s = inputSchoolboy(i + 1);
@@ -191,7 +191,7 @@ void task2_createFile(const char* filename)
 
     cout << "  Формат вводу: ПІБ, клас, телефон, мат, фіз, укр, літ\n";
     cout << "  Приклад: Коваленко Дарина Петрівна, 11, 0664445566, 11, 10, 12, 11\n\n";
-
+    cin.ignore();
     for (int i = 0; i < n; i++)
     {
         Schoolboy s = inputSchoolboy(i + 1);
@@ -254,6 +254,7 @@ void task2_addToEnd(const char* filename)
     if (!fout) { cerr << "Помилка відкриття файлу\n"; return; }
 
     cout << "  Формат: ПІБ, клас, телефон, мат, фіз, укр, літ\n\n";
+    cin.ignore();
     for (int i = 0; i < k; i++)
     {
         Schoolboy s = inputSchoolboy(i + 1);
