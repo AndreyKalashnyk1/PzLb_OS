@@ -650,9 +650,9 @@ int main()
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
 
-    //task31();
+    task31();
     //task32();
-    task33();
+    //task33();
 
     return 0;
 }
