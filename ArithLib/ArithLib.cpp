@@ -1,4 +1,4 @@
-#include <climits>
+﻿#include <climits>
 #include "ArithLib.h"
 
 ARITHAPI int Add64(int64_t a, int64_t b, int64_t* result)
