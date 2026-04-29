@@ -29,6 +29,7 @@ void simulateMLFQ(vector<Process>& procs)
 {
     const int quanta[4] = { 2, 4, 8, 1000000 };
     vector<deque<Process*>> queues(4);
+    vector<bool> arrived(procs.size(), false);
 
     int time = 0;
     int done = 0;
@@ -39,15 +40,15 @@ void simulateMLFQ(vector<Process>& procs)
 
     while (done < n)
     {
-        for (auto& p : procs)
-            if (p.arrivalTime == time && p.remaining == p.burstTime)
+        for (int i = 0; i < n; i++)
+            if (!arrived[i] && procs[i].arrivalTime <= time)
             {
-                p.queueLevel = 1;
-                queues[0].push_back(&p);
+                procs[i].queueLevel = 1;
+                queues[0].push_back(&procs[i]);
+                arrived[i] = true;
             }
 
         int qi = highestPriorityQueue(queues);
-
         if (qi == -1) { time++; continue; }
 
         Process* cur = queues[qi].front();
@@ -55,6 +56,7 @@ void simulateMLFQ(vector<Process>& procs)
 
         int quantum = quanta[qi];
         int slice = min(quantum, cur->remaining);
+        bool preempted = false;
 
         cout << time << "\t" << cur->name
             << "\tQ" << (qi + 1)
@@ -66,11 +68,12 @@ void simulateMLFQ(vector<Process>& procs)
             time++;
             cur->remaining--;
 
-            for (auto& p : procs)
-                if (p.arrivalTime == time && p.remaining == p.burstTime)
+            for (int i = 0; i < n; i++)
+                if (!arrived[i] && procs[i].arrivalTime <= time)
                 {
-                    p.queueLevel = 1;
-                    queues[0].push_back(&p);
+                    procs[i].queueLevel = 1;
+                    queues[0].push_back(&procs[i]);
+                    arrived[i] = true;
                 }
 
             int newQi = highestPriorityQueue(queues);
@@ -78,25 +81,26 @@ void simulateMLFQ(vector<Process>& procs)
             {
                 cout << cur->remaining << " (витіснено)\n";
                 queues[qi].push_front(cur);
-                goto next_iteration;
+                preempted = true;
+                break;
             }
         }
 
-        cout << cur->remaining << "\n";
-
-        if (cur->remaining == 0)
+        if (!preempted)
         {
-            cur->finishTime = time;
-            done++;
+            cout << cur->remaining << "\n";
+            if (cur->remaining == 0)
+            {
+                cur->finishTime = time;
+                done++;
+            }
+            else
+            {
+                int nextQ = min(qi + 1, 3);
+                cur->queueLevel = nextQ + 1;
+                queues[nextQ].push_back(cur);
+            }
         }
-        else
-        {
-            int nextQ = min(qi + 1, 3);
-            cur->queueLevel = nextQ + 1;
-            queues[nextQ].push_back(cur);
-        }
-
-    next_iteration:;
     }
 
     cout << "\nРезультати:\n";
@@ -123,7 +127,6 @@ int main()
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
 
-    // процеси: ім'я, час появи, тривалість, залишок, рівень черги, час завершення
     vector<Process> procs = {
         { "P0", 0, 10, 10, 1, 0 },
         { "P1", 1,  8,  8, 1, 0 },

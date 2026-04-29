@@ -32,13 +32,10 @@ void enqueue(vector<Process*>& queue, Process* p)
 Process* dequeue(vector<Process*>& queue)
 {
     if (queue.empty()) return nullptr;
-
     Process* chosen = queue.front();
     queue.erase(queue.begin());
-
     for (Process* p : queue)
         p->curPriority--;
-
     return chosen;
 }
 
@@ -48,17 +45,19 @@ void simulateDynamicPriority(vector<Process>& procs, int quantum)
     int done = 0;
     int n = (int)procs.size();
     vector<Process*> ready;
+    vector<bool> inQueue(n, false);
 
     cout << "Час\tПроцес\t\tЗалишок\tПріоритет\n";
     cout << string(55, '-') << "\n";
 
     while (done < n)
     {
-        for (auto& p : procs)
-            if (p.arrivalTime == time && p.remaining > 0)
+        for (int i = 0; i < n; i++)
+            if (!inQueue[i] && procs[i].arrivalTime <= time && procs[i].remaining > 0 && procs[i].finishTime == 0)
             {
-                p.waitStart = time;
-                enqueue(ready, &p);
+                procs[i].waitStart = time;
+                enqueue(ready, &procs[i]);
+                inQueue[i] = true;
             }
 
         if (ready.empty()) { time++; continue; }
@@ -73,15 +72,12 @@ void simulateDynamicPriority(vector<Process>& procs, int quantum)
         time += slice;
         cur->remaining -= slice;
 
-        for (auto& p : procs)
-            if (p.arrivalTime > time - slice &&
-                p.arrivalTime <= time &&
-                p.remaining > 0 &&
-                p.finishTime == 0 &&
-                &p != cur)
+        for (int i = 0; i < n; i++)
+            if (!inQueue[i] && procs[i].arrivalTime <= time && procs[i].remaining > 0 && procs[i].finishTime == 0)
             {
-                p.waitStart = p.arrivalTime;
-                enqueue(ready, &p);
+                procs[i].waitStart = procs[i].arrivalTime;
+                enqueue(ready, &procs[i]);
+                inQueue[i] = true;
             }
 
         if (cur->remaining == 0)
@@ -116,13 +112,11 @@ void simulateDynamicPriority(vector<Process>& procs, int quantum)
     cout << "Середній час чекання:   " << avgWaiting / n << "\n";
 }
 
-
 int main()
 {
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
 
-    // процеси: ім'я, час появи, тривалість, початковий пріоритет
     vector<Process> procs = {
         { "P0", 0, 10, 3, 3, 10, 0, 0 },
         { "P1", 1,  8, 2, 2,  8, 0, 0 },
